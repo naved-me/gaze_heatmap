@@ -286,6 +286,26 @@ def draw_landmarks_on_frame(frame, pts):
     cv2.circle(frame, tuple(pts[r2].astype(int)), 4, (255, 255, 0), -1)
 
 
+def draw_calibration_corner(img, cx, cy, W, H, corner_name):
+    """Draw a corner guide for calibration."""
+    if corner_name == "TL":
+        cv2.line(img, (cx, cy), (0, 0), (255, 255, 255), 2)
+        cv2.line(img, (cx, 0), (cx, cy), (255, 255, 255), 1)
+        cv2.line(img, (0, cy), (cx, cy), (255, 255, 255), 1)
+    elif corner_name == "TR":
+        cv2.line(img, (cx, cy), (W - 1, 0), (255, 255, 255), 2)
+        cv2.line(img, (cx, 0), (cx, cy), (255, 255, 255), 1)
+        cv2.line(img, (cx, cy), (W - 1, cy), (255, 255, 255), 1)
+    elif corner_name == "BL":
+        cv2.line(img, (cx, cy), (0, H - 1), (255, 255, 255), 2)
+        cv2.line(img, (0, cy), (cx, cy), (255, 255, 255), 1)
+        cv2.line(img, (cx, cy), (cx, H - 1), (255, 255, 255), 1)
+    elif corner_name == "BR":
+        cv2.line(img, (cx, cy), (W - 1, H - 1), (255, 255, 255), 2)
+        cv2.line(img, (cx, cy), (W - 1, cy), (255, 255, 255), 1)
+        cv2.line(img, (cx, cy), (cx, H - 1), (255, 255, 255), 1)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -324,6 +344,8 @@ def main():
                         help="Median filter window size for display smoothing.")
     parser.add_argument("--jump-px", type=float, default=30.0,
                         help="Outlier rejection threshold in pixels for display smoothing.")
+    parser.add_argument("--save-heatmap", action="store_true", help="Save the final combined heatmap as an image.")
+    parser.add_argument("--output", type=str, default="final_heatmap.png", help="Output image filename.")
 
     args = parser.parse_args()
 
@@ -411,22 +433,7 @@ def main():
                 cv2.circle(calib_screen, (cx_i, cy_i), 25, (0, 0, 255), -1)
                 cv2.circle(calib_screen, (cx_i, cy_i), 30, (255, 255, 255), 2)
                 corner_name = next_point_name
-                if corner_name == "TL":
-                    cv2.line(calib_screen, (cx_i, cy_i), (0, 0), (255, 255, 255), 2)
-                    cv2.line(calib_screen, (cx_i, 0), (cx_i, cy_i), (255, 255, 255), 1)
-                    cv2.line(calib_screen, (0, cy_i), (cx_i, cy_i), (255, 255, 255), 1)
-                elif corner_name == "TR":
-                    cv2.line(calib_screen, (cx_i, cy_i), (W - 1, 0), (255, 255, 255), 2)
-                    cv2.line(calib_screen, (cx_i, 0), (cx_i, cy_i), (255, 255, 255), 1)
-                    cv2.line(calib_screen, (cx_i, cy_i), (W - 1, cy_i), (255, 255, 255), 1)
-                elif corner_name == "BL":
-                    cv2.line(calib_screen, (cx_i, cy_i), (0, H - 1), (255, 255, 255), 2)
-                    cv2.line(calib_screen, (0, cy_i), (cx_i, cy_i), (255, 255, 255), 1)
-                    cv2.line(calib_screen, (cx_i, cy_i), (cx_i, H - 1), (255, 255, 255), 1)
-                elif corner_name == "BR":
-                    cv2.line(calib_screen, (cx_i, cy_i), (W - 1, H - 1), (255, 255, 255), 2)
-                    cv2.line(calib_screen, (cx_i, cy_i), (W - 1, cy_i), (255, 255, 255), 1)
-                    cv2.line(calib_screen, (cx_i, cy_i), (cx_i, H - 1), (255, 255, 255), 1)
+                draw_calibration_corner(calib_screen, cx_i, cy_i, W, H, corner_name)
 
                 corner_name_full = {"TL": "Top-Left", "TR": "Top-Right",
                                     "BL": "Bottom-Left", "BR": "Bottom-Right"}[corner_name]
@@ -508,22 +515,7 @@ def main():
                     cv2.circle(calib_screen_sample, (cx_i, cy_i), 25, (0, 0, 255), -1)
                     cv2.circle(calib_screen_sample, (cx_i, cy_i), 30, (255, 255, 255), 2)
                     corner_name = next_point_name
-                    if corner_name == "TL":
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (0, 0), (255, 255, 255), 2)
-                        cv2.line(calib_screen_sample, (cx_i, 0), (cx_i, cy_i), (255, 255, 255), 1)
-                        cv2.line(calib_screen_sample, (0, cy_i), (cx_i, cy_i), (255, 255, 255), 1)
-                    elif corner_name == "TR":
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (W - 1, 0), (255, 255, 255), 2)
-                        cv2.line(calib_screen_sample, (cx_i, 0), (cx_i, cy_i), (255, 255, 255), 1)
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (W - 1, cy_i), (255, 255, 255), 1)
-                    elif corner_name == "BL":
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (0, H - 1), (255, 255, 255), 2)
-                        cv2.line(calib_screen_sample, (0, cy_i), (cx_i, cy_i), (255, 255, 255), 1)
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (cx_i, H - 1), (255, 255, 255), 1)
-                    elif corner_name == "BR":
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (W - 1, H - 1), (255, 255, 255), 2)
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (W - 1, cy_i), (255, 255, 255), 1)
-                        cv2.line(calib_screen_sample, (cx_i, cy_i), (cx_i, H - 1), (255, 255, 255), 1)
+                    draw_calibration_corner(calib_screen_sample, cx_i, cy_i, W, H, corner_name)
                 else:
                     cv2.circle(calib_screen_sample, (cx_i, cy_i), 20, (0, 0, 255), -1)
                     cv2.circle(calib_screen_sample, (cx_i, cy_i), 25, (255, 255, 255), 2)
@@ -591,6 +583,9 @@ def main():
     print("CALIBRATION COMPLETE")
     print("=" * 60)
     print("Running gaze heatmap. Press ESC to quit.\n")
+
+    # Accumulate total heat without fading for the final image
+    total_heat = np.zeros((H, W), dtype=np.float32)
 
     # ================================================================
     # MAIN HEATMAP LOOP
@@ -700,6 +695,7 @@ def main():
             blob = gaussian_blob((H, W), (x, y), float(args.sigma))
             if blob is not None:
                 heat += blob.astype(np.float32)
+                total_heat += blob.astype(np.float32)
 
             cam_px = (
                 int((sx / (W - 1)) * (frame_w - 1)),
@@ -751,6 +747,28 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+    
+    if args.save_heatmap:
+        print(f"\n[INFO] Saving final combined heatmap to {args.output}...")
+        total_heat_thr = float(args.heat_bg_thresh)
+        total_heat_masked = total_heat.copy()
+        total_heat_masked[total_heat_masked < total_heat_thr] = 0.0
+        
+        if total_heat_masked.max() > 0:
+            total_heat_vis = cv2.normalize(total_heat_masked, None, 0, 255, cv2.NORM_MINMAX)
+            total_heat_vis = total_heat_vis.astype(np.uint8)
+            total_heat_color = cv2.applyColorMap(total_heat_vis, cv2.COLORMAP_JET)
+            
+            # Mask out the background to be black instead of dark blue from COLORMAP_JET
+            heat_exists = total_heat_masked > 0.0
+            overlay_canvas = np.zeros_like(total_heat_color)
+            overlay_canvas[heat_exists] = total_heat_color[heat_exists]
+            
+            cv2.imwrite(args.output, overlay_canvas)
+            print(f"[INFO] Saved {args.output}")
+        else:
+            print("[INFO] No gaze data to save.")
+
     print("\nShutdown complete.")
 
 

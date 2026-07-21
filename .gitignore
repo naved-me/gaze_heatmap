@@ -1,3 +1,8 @@
 gaze_env/
 __pycache__/
 *.pyc
+*.task
+
+# Ignore output images and videos
+*.png
+*.avi
