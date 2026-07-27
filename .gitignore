@@ -6,3 +6,6 @@ __pycache__/
 # Ignore output images and videos
 *.png
 *.avi
+
+# Ignore learning docs
+learn.md

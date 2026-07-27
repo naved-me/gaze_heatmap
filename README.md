@@ -12,6 +12,20 @@ A cross-platform (Windows/Linux/macOS) real-time eye-tracking and gaze heatmap a
   - On Linux/macOS: Displays in a standard OpenCV window.
 - **Session Heatmap Aggregation:** Track and save the *entire* session's gaze history! You can accumulate all gaze points into a single image to see a complete map of where you looked over the duration of the session.
 
+## How it Works
+
+The application operates through a streamlined computer vision pipeline:
+1. **Detection**: Captures webcam video and extracts 3D facial landmarks using MediaPipe, focusing on the iris for eye position and the nose tip for head pose compensation.
+2. **Estimation**: Calculates a stable gaze vector based on the geometric relationship between the eyes and the head.
+3. **Calibration**: Maps the user's extreme gaze points (screen corners) to define a personalized 2D coordinate space.
+4. **Rendering**: Normalizes the real-time gaze vector and generates a dynamic Gaussian blob on a transparent overlay, creating a fluid heatmap effect.
+
+## Potential Applications
+
+- **UX/UI Research**: Evaluate user engagement by tracking where users naturally look on a screen.
+- **Accessibility**: Serve as a foundational step toward hands-free interface control.
+- **Cognitive Studies**: Analyze visual attention during reading or specific tasks.
+
 ## Prerequisites
 
 - Python 3.8+
